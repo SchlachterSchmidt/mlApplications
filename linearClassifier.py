@@ -1,32 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
-
-def getFigure():
-	plt.ion()
-	fig = plt.figure()
-	ax = fig.add_axes([0, 0, 1, 1])
-	ax.get_xaxis().tick_bottom()
-	ax.get_yaxis().tick_left()
-	return fig, ax
-
-def drawScatter(fig, ax, x, y, color, label):
-	ax.scatter(x[:,1], y, color=color, linewidth=0.3, label=label)
-	plt.show()
-	plt.pause(0.5)
-
-def drawLine(fig, ax, x, y, color, label):
-	ax.plot(x[:,1], y, color=color, linewidth=0.5, label=label)
-	plt.draw()
-	plt.pause(0.5)
-
-def costFunction(w, x, y):
-	y_estimate = x.dot(w).flatten()
-	error = (y.flatten() - y_estimate)
-	mse = (1.0 / len(x)) * np.sum(np.power(error, 2))
-	gradient = -(1.0/len(x)) * error.dot(x)
-
-	return gradient, mse
+from costFunction import costFunction
+from drawUtil import *
 
 def getData():
 	x = np.linspace(1.0, 10.0, 100)[:, np.newaxis]
@@ -63,6 +38,7 @@ def gradientDescent(w, x, y, tolerance):
 		w = new_w
 
 	print("final cost: %8f" % costFunction(w, train_x, train_y)[1])
+
 	return w, error
 
 
@@ -83,3 +59,4 @@ if __name__ == "__main__":
 	drawScatter(fig, ax, test_x, test_y, 'purple', 'test set')
 
 	print("cost on test set: %f" % costFunction(w, test_x, test_y)[1])
+	input("Press Enter to close...")
