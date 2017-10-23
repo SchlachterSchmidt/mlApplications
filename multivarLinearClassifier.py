@@ -1,12 +1,11 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from costFunction import costFunction
 from drawUtil import *
 
-def getData(model_order):
+def getData(examples, model_order):
 	portion = 20
-	x = np.linspace(1.0, 10.0, 100)[:, np.newaxis]
-	y = np.sin(x) + 0.1 * np.power(x, 2) + 0.5 * np.random.randn(100, 1)
+	x = np.linspace(1.0, 10.0, examples)[:, np.newaxis]
+	y = np.sin(x) + 0.1 * np.power(x, 2) + 0.5 * np.random.randn(examples, 1)
 	x = np.power(x, range(model_order))
 	x /= np.max(x, axis=0)
 	order = np.random.permutation(len(x))
@@ -50,13 +49,14 @@ def stochasticGradientDescent(w, x, y, tolerance, batch_size, alpha, decay):
 	return w, error, iterations
 
 if __name__ == "__main__":
+	examples = 100
 	model_order = 6
 	alpha = 0.5
 	tolerance = 1e-9
 	decay = 0.99
 	batch_size = 10
 
-	x, y, train_x, train_y, test_x, test_y = getData(model_order)
+	x, y, train_x, train_y, test_x, test_y = getData(examples, model_order)
 	w = np.random.randn(model_order)
 
 	fig, ax = getFigure()
