@@ -1,8 +1,13 @@
+"""Multivariate linear regression module."""
+
 import numpy as np
+
 from costFunction import costFunction
-from drawUtil import *
+from drawUtil import drawLine, drawScatter, getFigure
+
 
 def getData(examples, model_order):
+	"""Prepare the data train / test split and return it."""
 	portion = 20
 	x = np.linspace(1.0, 10.0, examples)[:, np.newaxis]
 	y = np.sin(x) + 0.1 * np.power(x, 2) + 0.5 * np.random.randn(examples, 1)
@@ -16,17 +21,19 @@ def getData(examples, model_order):
 
 	return x, y, train_x, train_y, test_x, test_y
 
+
 def stochasticGradientDescent(w, x, y, tolerance, batch_size, alpha, decay):
+	"""Use stochastic gradient descent to minimize cost."""
 	epochs = 1
 	iterations = 0
 	while True:
 		order = np.random.permutation(len(train_x))
 		x = x[order]
 		y = y[order]
-		b=0
+		b = 0
 		while b < len(train_x):
-			tx = x[b : b+batch_size]
-			ty = y[b : b+batch_size]
+			tx = x[b: b+batch_size]
+			ty = y[b: b+batch_size]
 			gradient = costFunction(w, tx, ty)[0]
 			error = costFunction(w, x, y)[1]
 			w -= alpha * gradient
@@ -34,10 +41,11 @@ def stochasticGradientDescent(w, x, y, tolerance, batch_size, alpha, decay):
 			b += batch_size
 
 		# Keep track of our performance
-		if epochs%100==0:
+		if epochs % 100 == 0:
 			new_error = costFunction(w, x, y)[1]
-			print("Epoch: %d - Error: %.4f" %(epochs, new_error))
-			#drawLine(fig, ax, x, x.dot(w), 'yellow', 'estimate')
+			print("Epoch: %d - Error: %.4f" % (epochs, new_error))
+			drawLine(fig, ax, x, x.dot(w), 'yellow', 'estimate')
+
 			# Stopping Condition
 			if abs(new_error - error) < tolerance:
 				print("Converged.")
@@ -47,6 +55,7 @@ def stochasticGradientDescent(w, x, y, tolerance, batch_size, alpha, decay):
 		epochs += 1
 
 	return w, error, iterations
+
 
 if __name__ == "__main__":
 	examples = 100
@@ -63,12 +72,13 @@ if __name__ == "__main__":
 	drawScatter(fig, ax, train_x, train_y, 'lightblue', 'training set')
 	drawLine(fig, ax, x, x.dot(w), 'green', 'initial guess')
 
-	w, error, iterations = stochasticGradientDescent(w, train_x, train_y, tolerance, batch_size, alpha, decay)
+	w, error, iterations = stochasticGradientDescent(
+		w, train_x, train_y, tolerance, batch_size, alpha, decay)
 
 	drawLine(fig, ax, x, x.dot(w), 'red', 'decision boundary')
 	drawScatter(fig, ax, test_x, test_y, 'purple', 'test set')
 
-	print("w =",w)
+	print("w =", w)
 	print("Test Cost = %.8f" % costFunction(w, test_x, test_y)[1])
 	print("Total iterations =", iterations)
 	input("Press Enter to close...")
